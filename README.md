@@ -5,6 +5,12 @@ Split-View-Editor im Browser: links **Markdown**, rechts **Rich Text** (mit Tool
 **Repository:** [github.com/buildwithheart/md2rt](https://github.com/buildwithheart/md2rt)  
 **GitHub:** [@buildwithheart](https://github.com/buildwithheart)
 
+## Versionierung
+
+- **Semantic Versioning** (`MAJOR.MINOR.PATCH`): Die aktuelle Version steht in der Datei [`VERSION`](VERSION) und wird im Footer der App sowie als `<meta name="application-version">` ausgegeben.
+- Änderungshistorie: [`CHANGELOG.md`](CHANGELOG.md) (Format: [Keep a Changelog](https://keepachangelog.com/)).
+- **Release-Workflow (üblich):** `VERSION` und `CHANGELOG.md` anpassen, committen, Git-Tag setzen, z. B. `git tag -a v1.0.0 -m "Release 1.0.0"` und pushen (`git push origin v1.0.0`).
+
 ## Funktionen
 
 - Zwei Spalten (Split-Screen), responsiv gestapelt auf schmalen Viewports
@@ -12,6 +18,8 @@ Split-View-Editor im Browser: links **Markdown**, rechts **Rich Text** (mit Tool
 - Rich Text → HTML → Markdown mit [Turndown](https://github.com/mixmark-io/turndown)
 - Debouncing und Schutz vor Sync-Schleifen
 - Kopieren des jeweiligen Bereichs in die Zwischenablage (Markdown bzw. Rich-Text/HTML)
+- Markdown-Datei per Drag & Drop (nur linke Spalte) mit Drop-Zonen-Feedback
+- Rich Text als Word-kompatibles `.doc` herunterladen
 - Optionales Dark Mode-Styling über `prefers-color-scheme`
 
 ## Voraussetzungen
@@ -42,6 +50,8 @@ Die Seite kann bei Bedarf als `index.html` dupliziert werden (gleiches Markup wi
 
 ```
 MD2RT/
+├── VERSION            # Semver (Single Source of Truth für die Anzeige in index.php)
+├── CHANGELOG.md       # Änderungshistorie (Keep a Changelog)
 ├── index.php          # Einsteig, Security-Header, UI
 ├── LICENSE            # Apache License 2.0
 ├── README.md

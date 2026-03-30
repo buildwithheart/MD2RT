@@ -1,6 +1,13 @@
 <?php
 declare(strict_types=1);
 
+/** Semver: siehe Datei `VERSION` und `CHANGELOG.md`. */
+$versionFile = __DIR__ . DIRECTORY_SEPARATOR . 'VERSION';
+$appVersion = is_readable($versionFile) ? trim((string) file_get_contents($versionFile)) : '';
+if ($appVersion === '') {
+    $appVersion = '0.0.0';
+}
+
 $pageTitle = 'MD2RT — Markdown ↔ Rich Text';
 
 /** GitHub: Profil und Repository (Anzeige + Links im Footer). Repo-Name bei Bedarf anpassen. */
@@ -31,6 +38,7 @@ header('Content-Type: text/html; charset=UTF-8');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="application-version" content="<?= htmlspecialchars($appVersion, ENT_QUOTES, 'UTF-8') ?>">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/app.css">
@@ -42,8 +50,11 @@ header('Content-Type: text/html; charset=UTF-8');
             <p class="app-subtitle">Links Markdown bearbeiten, rechts formatieren — oder umgekehrt. Läuft lokal im Browser.</p>
         </header>
 
-        <main class="split" aria-label="Markdown und Rich-Text Editor">
-            <section class="pane pane--md" aria-labelledby="md-heading">
+        <main class="split" id="split-view" aria-label="Markdown und Rich-Text Editor">
+            <section class="pane pane--md" id="pane-md" aria-labelledby="md-heading">
+                <div class="pane-md-drop-overlay" aria-hidden="true">
+                    <span class="pane-md-drop-overlay__hint">Markdown-Datei hier ablegen</span>
+                </div>
                 <div class="pane-header">
                     <h2 id="md-heading" class="pane-title">Markdown</h2>
                     <button type="button" class="copy-btn" id="copy-md" aria-label="Markdown in die Zwischenablage kopieren" title="Markdown in die Zwischenablage kopieren">
@@ -60,10 +71,15 @@ header('Content-Type: text/html; charset=UTF-8');
             <section class="pane pane--rt" aria-labelledby="rt-heading">
                 <div class="pane-header">
                     <h2 id="rt-heading" class="pane-title">Rich Text</h2>
-                    <button type="button" class="copy-btn" id="copy-rt" aria-label="Rich Text in die Zwischenablage kopieren" title="Rich Text in die Zwischenablage kopieren">
-                        <svg class="copy-btn__icon copy-btn__icon--idle" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <svg class="copy-btn__icon copy-btn__icon--done" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                    </button>
+                    <div class="pane-header__actions">
+                        <button type="button" class="icon-btn" id="download-word" aria-label="Als Word-Dokument herunterladen" title="Als Word (.doc) herunterladen">
+                            <svg class="icon-btn__svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </button>
+                        <button type="button" class="copy-btn" id="copy-rt" aria-label="Rich Text in die Zwischenablage kopieren" title="Rich Text in die Zwischenablage kopieren">
+                            <svg class="copy-btn__icon copy-btn__icon--idle" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <svg class="copy-btn__icon copy-btn__icon--done" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        </button>
+                    </div>
                 </div>
                 <div id="quill-editor" class="quill-wrap"></div>
             </section>
@@ -79,6 +95,8 @@ header('Content-Type: text/html; charset=UTF-8');
                     <span class="app-footer__sep" aria-hidden="true">/</span>
                     <a class="app-footer__link" href="<?= htmlspecialchars($githubRepoUrl, ENT_QUOTES, 'UTF-8') ?>" rel="noopener noreferrer" target="_blank"><?= htmlspecialchars($githubRepo, ENT_QUOTES, 'UTF-8') ?></a>
                 </span>
+                <span class="app-footer__sep" aria-hidden="true">·</span>
+                <span class="app-footer__version" title="Semantic Versioning (siehe VERSION / CHANGELOG.md)">v<?= htmlspecialchars($appVersion, ENT_QUOTES, 'UTF-8') ?></span>
             </p>
         </footer>
     </div>

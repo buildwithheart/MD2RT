@@ -96,6 +96,12 @@ body {
     display: inline;
 }
 
+.app-footer__version {
+    display: inline;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+}
+
 @media (min-width: 480px) {
     .app-footer__meta {
         white-space: nowrap;
@@ -130,6 +136,81 @@ body {
     overflow: hidden;
 }
 
+/* Markdown-Spalte: Drop-Zone nur links (rechts später z. B. Word) */
+.pane--md {
+    position: relative;
+    transition:
+        box-shadow 0.22s ease,
+        transform 0.22s ease;
+}
+
+/* Drop-Zone: übliches Muster — gestrichelter Innenrahmen, Tönung, leichte Skalierung (vgl. gängige Upload-/DND-Patterns) */
+.pane-md-drop-overlay {
+    position: absolute;
+    z-index: 20;
+    inset: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border-radius: calc(var(--radius-sm) + 2px);
+    border: 2px dashed color-mix(in srgb, var(--accent) 42%, var(--border-strong));
+    background: color-mix(in srgb, var(--accent) 9%, var(--bg-elevated));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.988);
+    transition:
+        opacity 0.22s ease,
+        visibility 0s linear 0.22s,
+        transform 0.22s ease;
+}
+
+.pane-md-drop-overlay__hint {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: color-mix(in srgb, var(--accent) 92%, var(--text));
+    text-align: center;
+    max-width: 22ch;
+    line-height: 1.35;
+}
+
+.pane--md.pane--drop {
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 32%, transparent);
+    transform: scale(1.006);
+}
+
+.pane--md.pane--drop .pane-md-drop-overlay {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    transition:
+        opacity 0.22s ease,
+        visibility 0s linear 0s,
+        transform 0.22s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pane--md,
+    .pane-md-drop-overlay {
+        transition-duration: 0.01ms;
+    }
+
+    .pane--md.pane--drop {
+        transform: none;
+    }
+
+    .pane-md-drop-overlay {
+        transform: none;
+    }
+
+    .pane--md.pane--drop .pane-md-drop-overlay {
+        transform: none;
+    }
+}
+
 .pane {
     flex: 1 1 50%;
     min-width: 0;
@@ -156,6 +237,45 @@ body {
     color: var(--text-secondary);
     flex: 1 1 auto;
     min-width: 0;
+}
+
+.pane-header__actions {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.icon-btn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.icon-btn:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.icon-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.icon-btn__svg {
+    display: block;
+    pointer-events: none;
 }
 
 .copy-btn {
