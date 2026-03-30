@@ -26,7 +26,7 @@ header(
     "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " .
     "font-src 'self' data:; " .
     "img-src 'self' data: https:; " .
-    "connect-src 'self'; " .
+    "connect-src 'self' https://cdn.jsdelivr.net; " .
     "base-uri 'self'; " .
     "form-action 'self'"
 );
