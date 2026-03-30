@@ -1,13 +1,15 @@
 /* MD2RT — Apple-näheres Layout, System-Typografie */
 
 :root {
-    color-scheme: light dark;
+    color-scheme: light;
     --bg: rgba(250, 250, 252, 0.92);
     --bg-elevated: rgba(255, 255, 255, 0.72);
     --border: rgba(0, 0, 0, 0.08);
     --border-strong: rgba(0, 0, 0, 0.12);
     --text: rgba(0, 0, 0, 0.88);
     --text-secondary: rgba(0, 0, 0, 0.45);
+    /* Deckend: halbtransparentes --text-secondary + currentColor erzeugt dunklere Überlagerung bei SVG-Strichen */
+    --toolbar-icon: color-mix(in srgb, var(--text) 45%, rgb(255 255 255));
     --accent: rgba(0, 122, 255, 0.95);
     --radius: 12px;
     --radius-sm: 8px;
@@ -16,17 +18,45 @@
     --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
+[data-color-mode='dark'] {
+    color-scheme: dark;
+    --bg: rgba(22, 22, 24, 0.94);
+    --bg-elevated: rgba(44, 44, 48, 0.65);
+    --border: rgba(255, 255, 255, 0.1);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    --text: rgba(255, 255, 255, 0.92);
+    --text-secondary: rgba(255, 255, 255, 0.45);
+    --toolbar-icon: color-mix(in srgb, var(--text) 45%, rgb(28 28 30));
+    --accent: rgba(64, 156, 255, 0.95);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root[data-color-mode='system'] {
+        color-scheme: dark;
         --bg: rgba(22, 22, 24, 0.94);
         --bg-elevated: rgba(44, 44, 48, 0.65);
         --border: rgba(255, 255, 255, 0.1);
         --border-strong: rgba(255, 255, 255, 0.14);
         --text: rgba(255, 255, 255, 0.92);
         --text-secondary: rgba(255, 255, 255, 0.45);
+        --toolbar-icon: color-mix(in srgb, var(--text) 45%, rgb(28 28 30));
         --accent: rgba(64, 156, 255, 0.95);
         --shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 12px 32px rgba(0, 0, 0, 0.35);
     }
+}
+
+[data-color-mode='light'] {
+    color-scheme: light;
+    --bg: rgba(250, 250, 252, 0.92);
+    --bg-elevated: rgba(255, 255, 255, 0.72);
+    --border: rgba(0, 0, 0, 0.08);
+    --border-strong: rgba(0, 0, 0, 0.12);
+    --text: rgba(0, 0, 0, 0.88);
+    --text-secondary: rgba(0, 0, 0, 0.45);
+    --toolbar-icon: color-mix(in srgb, var(--text) 45%, rgb(255 255 255));
+    --accent: rgba(0, 122, 255, 0.95);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 *,
@@ -58,6 +88,63 @@ body {
 
 .app-header {
     margin-bottom: 24px;
+}
+
+.app-header__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px 20px;
+}
+
+.theme-switch {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.theme-switch__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.theme-switch__btn:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.theme-switch__btn.is-active {
+    color: var(--text);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.theme-switch__btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.theme-switch__icon {
+    display: block;
+    pointer-events: none;
 }
 
 .app-title {
@@ -337,7 +424,7 @@ body {
 
 .md-input {
     flex: 1;
-    margin: 0 12px 12px;
+    margin: 12px;
     padding: 14px 16px;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
@@ -371,7 +458,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    margin: 0 12px 12px;
+    margin: 12px;
     min-height: 0;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
@@ -379,35 +466,54 @@ body {
     background: color-mix(in srgb, var(--bg-elevated) 85%, transparent);
 }
 
-.quill-wrap .ql-toolbar.ql-snow {
+/* Quill: .ql-container.ql-snow sitzt auf #quill-editor — höhere Spezifität als .quill-wrap allein */
+#quill-editor.quill-wrap.ql-container.ql-snow {
+    border: 1px solid var(--border);
+}
+
+/* Quill: Toolbar liegt als Geschwister vor #quill-editor (nicht in .quill-wrap) */
+.pane--rt > .ql-toolbar.ql-snow {
+    border: 1px solid transparent !important;
+    box-shadow: none !important;
+}
+
+.pane--rt .ql-toolbar.ql-snow {
     font-family: var(--font-ui);
-    border: none;
-    border-bottom: 1px solid var(--border);
+    box-shadow: none;
     background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
     padding: 8px 10px;
 }
 
-.quill-wrap .ql-toolbar.ql-snow .ql-formats {
+.pane--rt .ql-toolbar.ql-snow .ql-formats {
     margin-right: 10px;
 }
 
-.quill-wrap .ql-toolbar.ql-snow button {
+.pane--rt .ql-toolbar.ql-snow .ql-picker {
+    color: var(--toolbar-icon);
+}
+
+.pane--rt .ql-toolbar.ql-snow button {
+    color: var(--toolbar-icon);
     border-radius: 6px;
     width: 28px;
     height: 28px;
     padding: 4px;
 }
 
-.quill-wrap .ql-toolbar.ql-snow button:hover,
-.quill-wrap .ql-toolbar.ql-snow button.ql-active {
+.pane--rt .ql-toolbar.ql-snow .ql-picker:hover .ql-picker-label {
     color: var(--accent);
 }
 
-.quill-wrap .ql-toolbar.ql-snow .ql-stroke {
+.pane--rt .ql-toolbar.ql-snow button:hover,
+.pane--rt .ql-toolbar.ql-snow button.ql-active {
+    color: var(--accent);
+}
+
+.pane--rt .ql-toolbar.ql-snow .ql-stroke {
     stroke: currentColor;
 }
 
-.quill-wrap .ql-toolbar.ql-snow .ql-fill {
+.pane--rt .ql-toolbar.ql-snow .ql-fill {
     fill: currentColor;
 }
 
@@ -434,6 +540,52 @@ body {
 
 .quill-wrap .ql-editor a {
     color: var(--accent);
+}
+
+/* Inline <code>: Quill legt helles Grau an; im Dark Theme war Text (var(--text)) hell auf hellgrau */
+.quill-wrap .ql-editor code {
+    font-size: 0.9em;
+    padding: 2px 5px;
+    border-radius: 3px;
+    color: rgba(0, 0, 0, 0.86);
+    background-color: #e8eaed;
+}
+
+.quill-wrap .ql-editor .ql-code-block-container {
+    color: #f0f0f0;
+    background-color: #23241f;
+    border-radius: 4px;
+}
+
+[data-color-mode='dark'] .quill-wrap .ql-editor code {
+    color: rgba(255, 255, 255, 0.92);
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-color-mode='dark'] .quill-wrap .ql-editor .ql-code-block-container {
+    color: rgba(255, 255, 255, 0.92);
+    background-color: #1c1c20;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root[data-color-mode='system'] .quill-wrap .ql-editor code {
+        color: rgba(255, 255, 255, 0.92);
+        background-color: rgba(255, 255, 255, 0.12);
+    }
+
+    :root[data-color-mode='system'] .quill-wrap .ql-editor .ql-code-block-container {
+        color: rgba(255, 255, 255, 0.92);
+        background-color: #1c1c20;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}
+
+.quill-wrap .ql-editor .ql-code-block-container code {
+    color: inherit;
+    background-color: transparent;
+    padding: 0;
+    font-size: inherit;
 }
 
 /* Accessibility */

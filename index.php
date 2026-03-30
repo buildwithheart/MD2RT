@@ -47,14 +47,30 @@ header('Content-Type: text/html; charset=UTF-8');
     <meta http-equiv="Expires" content="0">
     <meta name="application-version" content="<?= htmlspecialchars($appVersion, ENT_QUOTES, 'UTF-8') ?>">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
+    <script src="assets/js/theme.js?v=<?= rawurlencode($appVersion) ?>"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/app.css?v=<?= rawurlencode($appVersion) ?>">
 </head>
 <body>
     <div class="app-shell">
         <header class="app-header">
-            <h1 class="app-title"><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></h1>
-            <p class="app-subtitle">Links Markdown bearbeiten, rechts formatieren — oder umgekehrt. Läuft lokal im Browser.</p>
+            <div class="app-header__top">
+                <div>
+                    <h1 class="app-title"><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></h1>
+                    <p class="app-subtitle">Links Markdown bearbeiten, rechts formatieren — oder umgekehrt. Läuft lokal im Browser.</p>
+                </div>
+                <div class="theme-switch" role="group" aria-label="Farbschema">
+                    <button type="button" class="theme-switch__btn" data-theme-value="light" title="Helles Farbschema" aria-label="Helles Farbschema">
+                        <svg class="theme-switch__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                    </button>
+                    <button type="button" class="theme-switch__btn" data-theme-value="dark" title="Dunkles Farbschema" aria-label="Dunkles Farbschema">
+                        <svg class="theme-switch__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    </button>
+                    <button type="button" class="theme-switch__btn" data-theme-value="system" title="Systemeinstellung (hell oder dunkel)" aria-label="Systemeinstellung">
+                        <svg class="theme-switch__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    </button>
+                </div>
+            </div>
         </header>
 
         <main class="split" id="split-view" aria-label="Markdown und Rich-Text Editor">
