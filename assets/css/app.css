@@ -531,6 +531,50 @@ body {
     color: var(--text);
 }
 
+/* Lesbare Blockabstände (Quill-Snow setzt Überschriften sonst sehr dicht) */
+.quill-wrap .ql-editor h1,
+.quill-wrap .ql-editor h2,
+.quill-wrap .ql-editor h3,
+.quill-wrap .ql-editor h4,
+.quill-wrap .ql-editor h5,
+.quill-wrap .ql-editor h6 {
+    font-weight: 600;
+    line-height: 1.35;
+    margin-top: 0;
+    padding-bottom: 0.35em;
+    margin-bottom: 0.45em;
+}
+
+.quill-wrap .ql-editor h1 {
+    padding-bottom: 0.4em;
+    margin-bottom: 0.55em;
+}
+
+.quill-wrap .ql-editor h2 {
+    padding-bottom: 0.35em;
+    margin-bottom: 0.5em;
+}
+
+.quill-wrap .ql-editor p {
+    margin: 0 0 0.75em;
+}
+
+.quill-wrap .ql-editor blockquote {
+    margin: 0.5em 0 0.75em;
+    padding: 0 0 0.35em 0.85em;
+    border-left: 3px solid color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+
+.quill-wrap .ql-editor ul,
+.quill-wrap .ql-editor ol {
+    margin: 0.35em 0 0.65em;
+    padding-left: 1.35em;
+}
+
+.quill-wrap .ql-editor pre {
+    margin: 0.5em 0 0.75em;
+}
+
 .quill-wrap .ql-editor.ql-blank::before {
     color: var(--text-secondary);
     font-style: normal;

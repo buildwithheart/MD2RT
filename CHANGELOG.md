@@ -6,12 +6,16 @@ Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1
 
 ## [Unreleased]
 
-### Added
+### Changed
 
-- Konfigurationsdatei [`config/word-export.json`](config/word-export.json) für Word-Export (Schriftarten serifenlos, Schriftgröße, Zeilenabstand, Dokumenttitel u. a.); wird beim Start geladen, mit identischen Fallback-Werten in JavaScript, falls die Datei nicht erreichbar ist
+- Rich-Text-Editor (Quill): typografische Abstände für Überschriften (u. a. `padding-bottom`/`margin-bottom`), Absätze, Blockzitate, Listen und `pre`-Blöcke — bessere Lesbarkeit gegenüber dem sehr knappen Quill-Standard
 
 
 ## [1.0.1] — 2026-03-30
+
+### Added
+
+- Konfigurationsdatei [`config/word-export.json`](config/word-export.json) für Word-Export (Schriftarten serifenlos, Schriftgröße, Zeilenabstand, Dokumenttitel u. a.); wird beim Start geladen, mit identischen Fallback-Werten in JavaScript, falls die Datei nicht erreichbar ist
 
 ### UI-Optimierungen
 
