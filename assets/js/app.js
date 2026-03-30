@@ -87,17 +87,132 @@
         return quill.root.innerHTML;
     }
 
+    var WORD_EXPORT_DEFAULTS = {
+        bodyFontFamily: 'Calibri, "Segoe UI", Arial, sans-serif',
+        headingFontFamily: null,
+        baseFontSizePt: 11,
+        lineHeight: '1.15',
+        codeFontFamily: 'Consolas, "Courier New", monospace',
+        htmlTitle: 'MD2RT Export',
+    };
+
+    function mergeWordExportConfig(data) {
+        var out = {
+            bodyFontFamily: WORD_EXPORT_DEFAULTS.bodyFontFamily,
+            headingFontFamily: WORD_EXPORT_DEFAULTS.headingFontFamily,
+            baseFontSizePt: WORD_EXPORT_DEFAULTS.baseFontSizePt,
+            lineHeight: WORD_EXPORT_DEFAULTS.lineHeight,
+            codeFontFamily: WORD_EXPORT_DEFAULTS.codeFontFamily,
+            htmlTitle: WORD_EXPORT_DEFAULTS.htmlTitle,
+        };
+        if (!data || typeof data !== 'object') {
+            return out;
+        }
+        if (typeof data.bodyFontFamily === 'string') {
+            out.bodyFontFamily = data.bodyFontFamily;
+        }
+        if (typeof data.headingFontFamily === 'string') {
+            out.headingFontFamily = data.headingFontFamily;
+        } else if (data.headingFontFamily === null) {
+            out.headingFontFamily = null;
+        }
+        if (typeof data.baseFontSizePt === 'number' && !isNaN(data.baseFontSizePt) && data.baseFontSizePt > 0) {
+            out.baseFontSizePt = data.baseFontSizePt;
+        }
+        if (typeof data.lineHeight === 'string') {
+            out.lineHeight = data.lineHeight;
+        } else if (data.lineHeight === null) {
+            out.lineHeight = '';
+        }
+        if (typeof data.codeFontFamily === 'string') {
+            out.codeFontFamily = data.codeFontFamily;
+        } else if (data.codeFontFamily === null) {
+            out.codeFontFamily = '';
+        }
+        if (typeof data.htmlTitle === 'string') {
+            out.htmlTitle = data.htmlTitle;
+        }
+        return out;
+    }
+
+    var wordExportConfig = mergeWordExportConfig(null);
+
+    function escapeXmlText(s) {
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function buildWordExportStyles(cfg) {
+        var bodyFont = cfg.bodyFontFamily;
+        var headingFont =
+            cfg.headingFontFamily !== null && cfg.headingFontFamily !== undefined && cfg.headingFontFamily !== ''
+                ? cfg.headingFontFamily
+                : bodyFont;
+        var size =
+            typeof cfg.baseFontSizePt === 'number' && !isNaN(cfg.baseFontSizePt) && cfg.baseFontSizePt > 0
+                ? cfg.baseFontSizePt
+                : WORD_EXPORT_DEFAULTS.baseFontSizePt;
+        var parts = [];
+        parts.push('body { font-family: ');
+        parts.push(bodyFont);
+        parts.push('; font-size: ');
+        parts.push(String(size));
+        parts.push('pt;');
+        if (cfg.lineHeight !== undefined && cfg.lineHeight !== null && String(cfg.lineHeight).trim() !== '') {
+            parts.push(' line-height: ');
+            parts.push(String(cfg.lineHeight).trim());
+            parts.push(';');
+        }
+        parts.push(' }');
+        parts.push('h1, h2, h3, h4, h5, h6 { font-family: ');
+        parts.push(headingFont);
+        parts.push('; }');
+        if (cfg.codeFontFamily !== undefined && cfg.codeFontFamily !== null && String(cfg.codeFontFamily).trim() !== '') {
+            parts.push('pre, code { font-family: ');
+            parts.push(cfg.codeFontFamily.trim());
+            parts.push('; }');
+        }
+        return parts.join('');
+    }
+
     function buildWordDocumentHtml(bodyHtml) {
+        var cfg = wordExportConfig;
+        var title = escapeXmlText(cfg.htmlTitle || WORD_EXPORT_DEFAULTS.htmlTitle);
+        var css = buildWordExportStyles(cfg);
         return (
             '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
             'xmlns:w="urn:schemas-microsoft-com:office:word" ' +
             'xmlns="http://www.w3.org/TR/REC-html40">' +
-            '<head><meta charset="utf-8"><title>MD2RT Export</title>' +
+            '<head><meta charset="utf-8"><title>' +
+            title +
+            '</title>' +
+            '<style>' +
+            css +
+            '</style>' +
             '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->' +
             '</head><body>' +
             bodyHtml +
             '</body></html>'
         );
+    }
+
+    function loadWordExportConfig() {
+        fetch('config/word-export.json', { cache: 'no-store' })
+            .then(function (res) {
+                if (!res.ok) {
+                    throw new Error('word-export config not ok');
+                }
+                return res.json();
+            })
+            .then(function (data) {
+                wordExportConfig = mergeWordExportConfig(data);
+            })
+            .catch(function () {
+                wordExportConfig = mergeWordExportConfig(null);
+            });
     }
 
     function downloadQuillAsWord() {
@@ -347,5 +462,6 @@
         });
     }
 
+    loadWordExportConfig();
     applyMarkdownToQuill();
 })();

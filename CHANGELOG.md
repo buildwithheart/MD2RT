@@ -6,7 +6,10 @@ Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1
 
 ## [Unreleased]
 
-(noch keine Einträge)
+### Added
+
+- Konfigurationsdatei [`config/word-export.json`](config/word-export.json) für Word-Export (Schriftarten serifenlos, Schriftgröße, Zeilenabstand, Dokumenttitel u. a.); wird beim Start geladen, mit identischen Fallback-Werten in JavaScript, falls die Datei nicht erreichbar ist
+
 
 ## [1.0.0] — 2026-03-30
 
